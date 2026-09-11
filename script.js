@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  const STORAGE_KEY='sekkei-projects-v1';
+  const STORAGE_KEY='sekkei-projects-v2';
   const INIT_KEY='sekkei-projects-initialized-v1';
   const $=id=>document.getElementById(id);
   const dateFields=['orderDate','materialsDate','drawingStartDate','drawingCompleteDate','energyCompleteDate','confirmationSubmitDate','assessmentSubmitDate','approvalDate','deliveryDate'];
