@@ -15,7 +15,6 @@
       <p class="subtitle">実施設計事務所の「進捗」と「請求」をひとつに。</p>
     </div>
     <div class="header-actions">
-      <button type="button" class="btn btn-secondary" id="resetSamples">サンプルを再読込</button>
       <button type="button" class="btn btn-primary" id="addProject">＋ 案件を追加</button>
     </div>
   </header>
@@ -47,7 +46,6 @@
         <label class="search-field"><span class="sr-only">物件名検索</span><input id="searchInput" type="search" placeholder="物件名を検索"></label>
         <label><span>担当者</span><select id="managerFilter"><option value="">すべて</option></select></label>
         <label><span>ステータス</span><select id="statusFilter"><option value="">すべて</option></select></label>
-        <label><span>ボリューム</span><select id="volumeFilter"><option value="">すべて</option><option>S</option><option>M</option><option>L</option></select></label>
         <label class="checkbox-filter"><input id="unbilledFilter" type="checkbox"><span>未請求のみ</span></label>
         <button type="button" class="text-button" id="clearFilters">条件をクリア</button>
       </div>
@@ -55,7 +53,7 @@
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>物件名</th><th>担当</th><th>Vol.</th><th>現在状況</th><th>受注日</th><th>資料受領</th><th>作図</th><th>省エネ</th><th>確認申請</th><th>適判</th><th>下付</th><th>納品</th><th>請求予定月</th><th class="amount">請求予定額</th><th>請求状況</th><th></th>
+            <th>物件名</th><th>担当</th><th>現在状況</th><th>受注日</th><th>資料受領</th><th>作図</th><th>省エネ</th><th>確認申請</th><th>適判</th><th>下付</th><th>納品</th><th>請求予定月</th><th class="amount">請求予定額</th><th>請求状況</th><th></th>
           </tr></thead>
           <tbody id="projectRows"></tbody>
         </table>
@@ -72,7 +70,6 @@
         <fieldset><legend>基本情報</legend><div class="form-grid">
           <label class="span-2"><span>物件名 <b>必須</b></span><input id="name" required></label>
           <label><span>担当者 <b>必須</b></span><input id="manager" required></label>
-          <label><span>案件ボリューム</span><select id="volume"><option>S</option><option selected>M</option><option>L</option></select></label>
           <label><span>受注金額</span><input id="orderAmount" type="number" min="0" step="1000" inputmode="numeric"></label>
           <label class="span-2"><span>メモ</span><textarea id="memo" rows="3"></textarea></label>
         </div></fieldset>
