@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="実施設計事務所向けの案件進捗・請求・売上管理ツール">
+  <title>設計案件・売上管理</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">PROJECT &amp; BILLING CONTROL</p>
+      <h1>設計案件・売上管理</h1>
+      <p class="subtitle">実施設計事務所の「進捗」と「請求」をひとつに。</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-secondary" id="resetSamples">サンプルを再読込</button>
+      <button type="button" class="btn btn-primary" id="addProject">＋ 案件を追加</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="summary-grid" aria-label="案件・請求サマリー">
+      <article class="summary-card"><span>受注案件</span><strong id="totalCount">0<small>件</small></strong><p>登録済みの全案件</p></article>
+      <article class="summary-card"><span>進行中案件</span><strong id="activeCount">0<small>件</small></strong><p>納品前の進行案件</p></article>
+      <article class="summary-card money"><span>今月請求予定</span><strong id="thisMonthAmount">¥0</strong><p id="thisMonthLabel">—</p></article>
+      <article class="summary-card money"><span>来月請求予定</span><strong id="nextMonthAmount">¥0</strong><p id="nextMonthLabel">—</p></article>
+      <article class="summary-card alert-card"><span>未請求</span><strong id="unbilledAmount">¥0</strong><p id="unbilledCount">0件の要確認案件</p></article>
+    </section>
+
+    <section class="panel billing-panel">
+      <div class="section-heading">
+        <div><p class="section-index">01 / BILLING FORECAST</p><h2>月別請求予定</h2></div>
+        <p>今月から6か月の予定額と請求済額</p>
+      </div>
+      <div id="billingChart" class="billing-chart" aria-label="月別請求予定グラフ"></div>
+    </section>
+
+    <section class="panel projects-panel">
+      <div class="section-heading">
+        <div><p class="section-index">02 / PROJECT REGISTER</p><h2>案件一覧</h2></div>
+        <p id="resultCount">0件を表示</p>
+      </div>
+
+      <div class="filters" aria-label="案件絞り込み">
+        <label class="search-field"><span class="sr-only">物件名検索</span><input id="searchInput" type="search" placeholder="物件名を検索"></label>
+        <label><span>担当者</span><select id="managerFilter"><option value="">すべて</option></select></label>
+        <label><span>ステータス</span><select id="statusFilter"><option value="">すべて</option></select></label>
+        <label><span>ボリューム</span><select id="volumeFilter"><option value="">すべて</option><option>S</option><option>M</option><option>L</option></select></label>
+        <label class="checkbox-filter"><input id="unbilledFilter" type="checkbox"><span>未請求のみ</span></label>
+        <button type="button" class="text-button" id="clearFilters">条件をクリア</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>物件名</th><th>担当</th><th>Vol.</th><th>現在状況</th><th>受注日</th><th>資料受領</th><th>作図</th><th>省エネ</th><th>確認申請</th><th>適判</th><th>下付</th><th>納品</th><th>請求予定月</th><th class="amount">請求予定額</th><th>請求状況</th><th></th>
+          </tr></thead>
+          <tbody id="projectRows"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" hidden><strong>該当する案件はありません</strong><span>絞り込み条件を変更するか、新しい案件を登録してください。</span></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="projectDialog" class="dialog project-dialog">
+    <form id="projectForm" method="dialog">
+      <div class="dialog-header"><div><p class="section-index">PROJECT RECORD</p><h2 id="formTitle">案件を追加</h2></div><button type="button" class="icon-button" data-close aria-label="閉じる">×</button></div>
+      <input type="hidden" id="projectId">
+      <div class="form-scroll">
+        <fieldset><legend>基本情報</legend><div class="form-grid">
+          <label class="span-2"><span>物件名 <b>必須</b></span><input id="name" required></label>
+          <label><span>担当者 <b>必須</b></span><input id="manager" required></label>
+          <label><span>案件ボリューム</span><select id="volume"><option>S</option><option selected>M</option><option>L</option></select></label>
+          <label><span>受注金額</span><input id="orderAmount" type="number" min="0" step="1000" inputmode="numeric"></label>
+          <label class="span-2"><span>メモ</span><textarea id="memo" rows="3"></textarea></label>
+        </div></fieldset>
+        <fieldset><legend>工程</legend>
+          <div class="scope-grid">
+            <label><span>省エネ計算</span><select id="energyRequired"><option value="true">対象</option><option value="false">対象外</option></select></label>
+            <label><span>確認申請</span><select id="confirmationRequired"><option value="true">対象</option><option value="false">対象外</option></select></label>
+            <label><span>省エネ適合性判定</span><select id="assessmentRequired"><option value="true">対象</option><option value="false">対象外</option></select></label>
+          </div>
+          <div class="form-grid dates">
+            <label><span>受注日</span><input id="orderDate" type="date"></label><label><span>作図資料受取日</span><input id="materialsDate" type="date"></label>
+            <label><span>作図開始日</span><input id="drawingStartDate" type="date"></label><label><span>作図完了日</span><input id="drawingCompleteDate" type="date"></label>
+            <label data-scope="energy"><span>省エネ計算完了日</span><input id="energyCompleteDate" type="date"></label><label data-scope="confirmation"><span>確認申請提出日</span><input id="confirmationSubmitDate" type="date"></label>
+            <label data-scope="assessment"><span>省エネ適判提出日</span><input id="assessmentSubmitDate" type="date"></label><label data-scope="confirmation"><span>確認申請下付日</span><input id="approvalDate" type="date"></label>
+            <label><span>最終図面納品日</span><input id="deliveryDate" type="date"></label>
+          </div>
+        </fieldset>
+        <fieldset><legend>請求情報</legend><div class="form-grid">
+          <label><span>請求予定額</span><input id="billingAmount" type="number" min="0" step="1000" inputmode="numeric"></label>
+          <label><span>請求予定月</span><input id="billingMonth" type="month"></label>
+          <label><span>請求日</span><input id="invoiceDate" type="date"></label><label><span>入金日</span><input id="paymentDate" type="date"></label>
+        </div></fieldset>
+      </div>
+      <div class="dialog-footer"><button type="button" class="btn btn-secondary" data-close>キャンセル</button><button type="submit" class="btn btn-primary">保存する</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="detailDialog" class="dialog detail-dialog">
+    <div class="dialog-header"><div><p class="section-index">PROJECT DETAIL</p><h2 id="detailTitle"></h2></div><button type="button" class="icon-button" data-detail-close aria-label="閉じる">×</button></div>
+    <div class="detail-meta" id="detailMeta"></div><div class="detail-scroll"><div class="timeline" id="timeline"></div><aside class="billing-detail" id="billingDetail"></aside></div>
+    <div class="dialog-footer"><button type="button" class="btn btn-danger" id="deleteProject">削除</button><button type="button" class="btn btn-secondary" id="editProject">編集</button><button type="button" class="btn btn-primary" data-detail-close>閉じる</button></div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
